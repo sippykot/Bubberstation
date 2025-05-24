@@ -111,16 +111,18 @@
 					if(target_open_container.is_refillable() && target_open_container.is_drainable())
 						// here's where we actually do the cumming(?)
 						var/obj/item/organ/genital/testicles/src_testicles = src.get_organ_slot(ORGAN_SLOT_TESTICLES)
-						var/cum_volume = src_testicles.genital_size * 10
+						var/cum_volume = src_testicles.cumshot_size
 						var/total_volume_w_cum = cum_volume + target_open_container.reagents.total_volume
 						conditional_pref_sound(get_turf(src), SFX_DESECRATION, 50, TRUE, pref_to_check = /datum/preference/toggle/erp/sounds)
 						if(target_open_container.reagents.holder_full())
 							// its full already
+							src_testicles.transfer_internal_fluid(null, cum_volume)
 							add_cum_splatter_floor(get_turf(target_open_container))
 							visible_message(span_userlove("[src] tries to cum into the [target_open_container], but it's already full, spilling their hot load onto the floor!"), \
 								span_userlove("You try to cum into the [target_open_container], but it's already full, so it all hits the floor instead!"))
 						else
-							target_open_container.reagents.add_reagent(/datum/reagent/consumable/cum, cum_volume)
+							//target_open_container.reagents.add_reagent(/datum/reagent/consumable/cum, cum_volume)
+							src_testicles.transfer_internal_fluid(target_open_container, cum_volume)
 							if(total_volume_w_cum > target_open_container.volume)
 								// overflow, make the decal
 								add_cum_splatter_floor(get_turf(target_open_container))
@@ -131,6 +133,7 @@
 									span_userlove("You shoot string after string of hot cum into the [target_open_container]!"))
 					else
 						// cum fail
+						src_testicles.transfer_internal_fluid(null, cum_volume)
 						create_cum_decal = TRUE
 						visible_message(span_userlove("[src] shoots [self_their] sticky load onto the floor!"), \
 							span_userlove("You shoot string after string of hot cum, hitting the floor!"))
@@ -175,7 +178,8 @@
 						to_chat(target_human, span_userlove("Your [climax_into_choice] fills with warm cum as [src] shoots [self_their] load into it."))
 
 			var/obj/item/organ/genital/testicles/testicles = get_organ_slot(ORGAN_SLOT_TESTICLES)
-			testicles.transfer_internal_fluid(null, testicles.internal_fluid_count * 0.6) // yep. we are sending semen to nullspace
+			var/cum_volume = testicles.cumshot_size
+			testicles.transfer_internal_fluid(null, cum_volume) // yep. we are sending semen to nullspace
 			if(create_cum_decal)
 				add_cum_splatter_floor(get_turf(src))
 
