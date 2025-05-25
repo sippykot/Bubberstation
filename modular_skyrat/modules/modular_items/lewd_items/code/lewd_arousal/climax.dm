@@ -56,17 +56,22 @@
 
 	if(climax_choice == CLIMAX_PENIS || climax_choice == CLIMAX_BOTH)
 		var/obj/item/organ/genital/penis/penis = get_organ_slot(ORGAN_SLOT_PENIS)
+		var/obj/item/organ/genital/testicles/src_testicles = src.get_organ_slot(ORGAN_SLOT_TESTICLES)
+		var/cum_volume = src_testicles.cumshot_size
+
 		if(!get_organ_slot(ORGAN_SLOT_TESTICLES)) //If we have no god damn balls, we can't cum anywhere... GET BALLS!
 			visible_message(span_userlove("[src] orgasms, but nothing comes out of [self_their] penis!"), \
 				span_userlove("You orgasm, it feels great, but nothing comes out of your penis!"))
 
 		else if(is_wearing_condom())
 			var/obj/item/clothing/sextoy/condom/condom = src.penis // bruh 💀⚰️💀⚰️💀⚰️💀⚰️💀
+			src_testicles.transfer_internal_fluid(null, cum_volume)
 			condom.condom_use()
 			visible_message(span_userlove("[src] shoots [self_their] load into the [condom], filling it up!"), \
 				span_userlove("You shoot your thick load into the [condom] and it catches it all!"))
 
 		else if(!is_bottomless() && penis.visibility_preference != GENITAL_ALWAYS_SHOW)
+			src_testicles.transfer_internal_fluid(null, cum_volume)
 			visible_message(span_userlove("[src] cums inside [self_their] clothes!"), \
 				span_userlove("You shoot your load, but you weren't naked, so you mess up your clothes!"))
 			self_orgasm = TRUE
@@ -96,6 +101,7 @@
 			var/create_cum_decal = FALSE
 
 			if(!penis_climax_choice || penis_climax_choice == CLIMAX_ON_FLOOR)
+				src_testicles.transfer_internal_fluid(null, cum_volume)
 				create_cum_decal = TRUE
 				visible_message(span_userlove("[src] shoots [self_their] sticky load onto the floor!"), \
 					span_userlove("You shoot string after string of hot cum, hitting the floor!"))
@@ -103,16 +109,15 @@
 			else if(penis_climax_choice == CLIMAX_OPEN_CONTAINER)
 				var/target_choice = tgui_input_list(src, "Choose a container to cum into.", "Choose target!", interactable_inrange_open_containers)
 				if(!target_choice)
+					src_testicles.transfer_internal_fluid(null, cum_volume)
 					create_cum_decal = TRUE
 					visible_message(span_userlove("[src] shoots [self_their] sticky load onto the floor!"), \
 						span_userlove("You shoot string after string of hot cum, hitting the floor!"))
 				else
 					var/obj/item/reagent_containers/cup/target_open_container = interactable_inrange_open_containers[target_choice]
+					var/total_volume_w_cum = cum_volume + target_open_container.reagents.total_volume
 					if(target_open_container.is_refillable() && target_open_container.is_drainable())
 						// here's where we actually do the cumming(?)
-						var/obj/item/organ/genital/testicles/src_testicles = src.get_organ_slot(ORGAN_SLOT_TESTICLES)
-						var/cum_volume = src_testicles.cumshot_size
-						var/total_volume_w_cum = cum_volume + target_open_container.reagents.total_volume
 						conditional_pref_sound(get_turf(src), SFX_DESECRATION, 50, TRUE, pref_to_check = /datum/preference/toggle/erp/sounds)
 						if(target_open_container.reagents.holder_full())
 							// its full already
@@ -121,7 +126,6 @@
 							visible_message(span_userlove("[src] tries to cum into the [target_open_container], but it's already full, spilling their hot load onto the floor!"), \
 								span_userlove("You try to cum into the [target_open_container], but it's already full, so it all hits the floor instead!"))
 						else
-							//target_open_container.reagents.add_reagent(/datum/reagent/consumable/cum, cum_volume)
 							src_testicles.transfer_internal_fluid(target_open_container, cum_volume)
 							if(total_volume_w_cum > target_open_container.volume)
 								// overflow, make the decal
@@ -141,6 +145,7 @@
 			else
 				var/target_choice = tgui_input_list(src, "Choose a person to cum in or on.", "Choose target!", interactable_inrange_humans)
 				if(!target_choice)
+					src_testicles.transfer_internal_fluid(null, cum_volume)
 					create_cum_decal = TRUE
 					visible_message(span_userlove("[src] shoots [self_their] sticky load onto the floor!"), \
 						span_userlove("You shoot string after string of hot cum, hitting the floor!"))
@@ -177,9 +182,13 @@
 							span_userlove("You hilt your cock into [target_human]'s [climax_into_choice], shooting cum into [target_human_them]!"))
 						to_chat(target_human, span_userlove("Your [climax_into_choice] fills with warm cum as [src] shoots [self_their] load into it."))
 
-			var/obj/item/organ/genital/testicles/testicles = get_organ_slot(ORGAN_SLOT_TESTICLES)
-			var/cum_volume = testicles.cumshot_size
-			testicles.transfer_internal_fluid(null, cum_volume) // yep. we are sending semen to nullspace
+					if(climax_into_choice == "mouth")
+						src_testicles.reagents?.trans_to(target_human, src_testicles.cumshot_size, transferred_by = src, methods = INGEST)
+						//to_chat(target_human, span_userlove("Your [climax_into_choice] fills with warm cum as [src] shoots [self_their] load into it."))
+
+					else
+						src_testicles.transfer_internal_fluid(null, cum_volume) // yep. we are sending semen to nullspace
+
 			if(create_cum_decal)
 				add_cum_splatter_floor(get_turf(src))
 

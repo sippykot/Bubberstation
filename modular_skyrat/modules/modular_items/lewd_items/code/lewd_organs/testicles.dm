@@ -1,6 +1,7 @@
 /obj/item/organ/genital/testicles
 	internal_fluid_datum = /datum/reagent/consumable/cum
-	var/cumshot_size = internal_fluid_count * 0.6
+	var/cumshot_size = 0
+	var/cumshot_size_mult = 0.6
 
 /obj/item/organ/genital/testicles/build_from_dna(datum/dna/DNA, associated_key)
 	. = ..()

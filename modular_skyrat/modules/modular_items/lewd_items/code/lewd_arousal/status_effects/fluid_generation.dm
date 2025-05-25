@@ -42,11 +42,12 @@
 		return FALSE
 
 	var/obj/item/organ/genital/testicles/testes = owner.get_organ_slot(ORGAN_SLOT_TESTICLES)
-	if(!testes || (affected_human.arousal < AROUSAL_LOW))
-		return FALSE
+	// if(!testes || (affected_human.arousal < AROUSAL_LOW))
+	// 	return FALSE
 
-	var/regen = (affected_human.arousal / AROUSAL_MULTIPLIER) * (testes.internal_fluid_maximum / TESTES_MULTIPLIER) * BASE_MULTIPLIER
+	var/regen = 10 * (testes.internal_fluid_maximum / TESTES_MULTIPLIER) * BASE_MULTIPLIER
 	testes.internal_fluid_count += regen
+	testes.cumshot_size = testes.internal_fluid_count * testes.cumshot_size_mult
 
 /datum/status_effect/body_fluid_regen/breasts
 	id = " breast milk regen"

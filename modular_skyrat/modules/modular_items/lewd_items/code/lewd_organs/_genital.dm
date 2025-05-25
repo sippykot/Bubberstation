@@ -26,6 +26,6 @@
 
 	attempt_amount = clamp(attempt_amount, 0, internal_fluid_count)
 	if(reagent_container)
-		reagent_container.add_reagent(internal_fluid_datum, attempt_amount)
+		reagent_container.add_reagent(internal_fluid_datum, attempt_amount) // this is bugged, "undefined proc or verb"
 	internal_fluid_count -= attempt_amount
 
