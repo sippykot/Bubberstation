@@ -133,7 +133,12 @@
 	make_the_actual_order(object_we_attack, user)
 
 /// Takes the list of things to deliver and puts it into a cargo order
+// Insane cancer, DO NOT PUSH TO GITHUB - but it works!
 /obj/item/paper/paperslip/ration_ticket/proc/make_the_actual_order(obj/machinery/computer/cargo/object_we_attack, mob/user)
+	var/obj/item/surgery_tray/nuggies = new(get_turf(user))
+	nuggies.starting_items = items_we_deliver
+	nuggies.populate_contents()
+/*
 	var/datum/supply_pack/custom/ration_pack/ration_pack = new(
 		purchaser = user, \
 		cost = 0, \
@@ -168,6 +173,7 @@
 	crate_name = "[purchaser]'s ration delivery crate"
 	src.cost = cost
 	src.contains = contains
+*/
 
 // Ticket for some luxury items, which you get every second paycheck
 
